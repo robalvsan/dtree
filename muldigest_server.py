@@ -10,8 +10,8 @@ CORS(app)
 
 @app.route('/severeTree',methods=["POST"])
 def severe_tree():
-    print(request.data)
     data = json.loads(request.data)                           # 0==mild, 1==moderate, 2==severe
+    print('Severity classifier')
     print(data)
     if data['hb'] < 5.55:
         risk = 0
@@ -50,14 +50,18 @@ def severe_tree():
                     else:
                         risk = 2
     #hay que ponerlo en formato json para mandarlo... de la siguiente manera se puede hacer. Habrá alguna manera más elegante fijo
+    print('Answer')
+    print(risk)
     sol = pd.DataFrame()
-    sol['risk'] = [risk]
+    sol['risk'] = [int(risk)]
     return sol.iloc[0].to_json()
 
 
 @app.route('/prevalence',methods=["POST"])
 def prevalence():
     data = json.loads(request.data)                               # 0==no, 1==yes
+    print('Prevalence of gestational diabetes')
+    print(data)
     if data['plas'] <= 116: #primera altura, izquierda
         if data['pedi'] <= 0.201: #segunda altura, izquierda
             yes_no = 0
@@ -80,9 +84,11 @@ def prevalence():
                 yes_no = 1
             else:
                 yes_no = 0
+    print('Answer')
+    print(risk)
     #hay que ponerlo en formato json para mandarlo... de la siguiente manera se puede hacer. Habrá alguna manera más elegante fijo
     sol = pd.DataFrame()
-    sol['yes_no'] = [yes_no]
+    sol['yes_no'] = [int(yes_no)]
     return sol.iloc[0].to_json()
 
 
