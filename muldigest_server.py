@@ -10,71 +10,80 @@ CORS(app)
 
 @app.route('/severeTree',methods=["POST"])
 def severe_tree():
-    data = pd.DataFrame(json.loads(request.data))                             # 0==mild, 1==moderate, 2==severe
+    print(request.data)
+    data = json.loads(request.data)                           # 0==mild, 1==moderate, 2==severe
+    print(data)
     if data['hb'] < 5.55:
-        return 0
-    if data['food'] < 2.5:
-        if data['hb'] < 5.95:
-            return 1
-        else:
-            return 2
+        risk = 0
     else:
-        if data['age'] < 50:
-            if data['sys'] < 167.5:
-                if data['type'] == 2:   # gestacional==0, type1==1 y type2==2
-                    if data['hb'] < 5.85:
-                        return 1
-                    else:
-                        return 2
-                elif data['type'] == 1:
-                    if data['sys'] < 146:
-                        if data['plas'] < 150:
-                            return 2
-                        else:
-                            return 1
-                    else:
-                        return 2
-                else:
-                    return 2
+        if data['food'] < 2.5:
+            if data['hb'] < 5.95:
+                risk = 1
             else:
-                return 1
+                risk = 2
         else:
-            if data['weight'] < 61:
-                return 1
-            else:
-                if data['hb'] < 5.95:
-                    return 1
+            if data['age'] < 50:
+                if data['sys'] < 167.5:
+                    if data['type'] == 2:   # gestacional==0, type1==1 y type2==2
+                        if data['hb'] < 5.85:
+                            risk = 1
+                        else:
+                            risk = 2
+                    elif data['type'] == 1:
+                        if data['sys'] < 146:
+                            if data['plas'] < 150:
+                                risk = 2
+                            else:
+                                risk = 1
+                        else:
+                            risk = 2
+                    else:
+                        risk = 2
                 else:
-                    return 2
-
+                    risk = 1
+            else:
+                if data['weight'] < 61:
+                    risk = 1
+                else:
+                    if data['hb'] < 5.95:
+                        risk = 1
+                    else:
+                        risk = 2
+    #hay que ponerlo en formato json para mandarlo... de la siguiente manera se puede hacer. Habrá alguna manera más elegante fijo
+    sol = pd.DataFrame()
+    sol['risk'] = [risk]
+    return sol.iloc[0].to_json()
 
 
 @app.route('/prevalence',methods=["POST"])
 def prevalence():
-    data = pd.DataFrame(json.loads(request.data))                               # 0==no, 1==yes
+    data = json.loads(request.data)                               # 0==no, 1==yes
     if data['plas'] <= 116: #primera altura, izquierda
         if data['pedi'] <= 0.201: #segunda altura, izquierda
-            return 0
+            yes_no = 0
         else: #segunda altura, derecha
             if data['preg'] <= 2:
-                return 0
+                yes_no = 0
             else:
-                return 1
+                yes_no = 1
     else:
         if data['preg'] <= 7:
             if data['pedi'] <= 0.564:
                 if data['plas'] <= 162:
-                    return 0
+                    yes_no = 0
                 else:
-                    return 1
+                    yes_no = 1
             else:
-                return 1
+                yes_no = 1
         else:
             if data['pedi'] <= 1:
-                return 1
+                yes_no = 1
             else:
-                return 0
-
+                yes_no = 0
+    #hay que ponerlo en formato json para mandarlo... de la siguiente manera se puede hacer. Habrá alguna manera más elegante fijo
+    sol = pd.DataFrame()
+    sol['yes_no'] = [yes_no]
+    return sol.iloc[0].to_json()
 
 
 if __name__ == '__main__':
