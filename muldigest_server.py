@@ -85,7 +85,7 @@ def prevalence():
             else:
                 yes_no = 0
     print('Answer')
-    print(risk)
+    print(yes_no)
     #hay que ponerlo en formato json para mandarlo... de la siguiente manera se puede hacer. Habrá alguna manera más elegante fijo
     sol = pd.DataFrame()
     sol['yes_no'] = [int(yes_no)]
